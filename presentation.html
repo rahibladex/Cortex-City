@@ -749,11 +749,15 @@
     
     <!-- Top Branding Header -->
     <header>
-      <div class="brand">
+      <div class="brand" style="display: flex; align-items: center; gap: 1.5rem;">
         <div class="brand-logo">
           <i data-lucide="cpu" style="width: 20px; height: 20px;"></i>
         </div>
         <div class="brand-name">CORTEX CITY</div>
+        <a href="index.html" class="badge" style="color: var(--cyan); background: rgba(34, 211, 238, 0.1); border-color: rgba(34, 211, 238, 0.3); text-decoration: none; display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; padding: 0.25rem 0.75rem; cursor: pointer; border-radius: 9999px; border: 1px solid rgba(34, 211, 238, 0.3); transition: all 0.2s;" onmouseover="this.style.background='rgba(34,211,238,0.2)'" onmouseout="this.style.background='rgba(34,211,238,0.1)'">
+          <i data-lucide="external-link" style="width: 12px; height: 12px;"></i>
+          Live Simulator
+        </a>
       </div>
       <div class="slide-counter" id="slideNum">01 / 09</div>
     </header>
