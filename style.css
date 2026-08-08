@@ -1,0 +1,308 @@
+/* style.css - Futuristic Cyberpunk Glassmorphism Styling */
+
+:root {
+  --color-bg: #0b0f19;
+  --color-panel: rgba(15, 23, 42, 0.75);
+  --color-cyan: #22d3ee;
+  --color-cyan-glow: rgba(34, 211, 238, 0.3);
+  --color-green: #10b981;
+  --color-green-glow: rgba(16, 185, 129, 0.3);
+  --color-yellow: #f59e0b;
+  --color-yellow-glow: rgba(245, 158, 11, 0.3);
+  --color-red: #ef4444;
+  --color-red-glow: rgba(239, 68, 68, 0.3);
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--color-bg);
+  color: #e2e8f0;
+  overflow: hidden;
+}
+
+.font-cyber {
+  font-family: 'Orbitron', sans-serif;
+}
+
+.font-tech {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+/* Glassmorphism Panels */
+.glass-panel {
+  background: var(--color-panel);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-panel-hover:hover {
+  border-color: rgba(34, 211, 238, 0.35);
+  box-shadow: 0 8px 32px 0 rgba(34, 211, 238, 0.15);
+}
+
+/* Neon Glowing Elements */
+.glow-cyan {
+  text-shadow: 0 0 10px rgba(34, 211, 238, 0.6), 0 0 20px rgba(34, 211, 238, 0.3);
+}
+
+.glow-border-cyan {
+  box-shadow: 0 0 15px rgba(34, 211, 238, 0.2);
+  border-color: rgba(34, 211, 238, 0.5);
+}
+
+/* Scrollbar Customization */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(34, 211, 238, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(34, 211, 238, 0.6);
+}
+
+/* Leaflet Dark Theme Overrides */
+.leaflet-container {
+  background: #090d16 !important;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Customizing Leaflet Popups to look futuristic */
+.leaflet-popup-content-wrapper {
+  background: rgba(15, 23, 42, 0.9) !important;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(34, 211, 238, 0.3);
+  color: #f1f5f9 !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6) !important;
+  border-radius: 8px !important;
+}
+
+.leaflet-popup-tip {
+  background: rgba(15, 23, 42, 0.9) !important;
+  border: 1px solid rgba(34, 211, 238, 0.3);
+}
+
+.leaflet-bar {
+  border: 1px solid rgba(34, 211, 238, 0.3) !important;
+  box-shadow: none !important;
+  border-radius: 6px !important;
+  overflow: hidden;
+}
+
+.leaflet-bar a {
+  background-color: rgba(15, 23, 42, 0.8) !important;
+  color: #22d3ee !important;
+  border-bottom: 1px solid rgba(34, 211, 238, 0.2) !important;
+  transition: all 0.2s ease;
+}
+
+.leaflet-bar a:hover {
+  background-color: rgba(34, 211, 238, 0.2) !important;
+  color: #fff !important;
+}
+
+/* Pulsing AI status indicator */
+@keyframes status-pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+    box-shadow: 0 0 8px rgba(34, 211, 238, 0.6);
+  }
+
+  50% {
+    transform: scale(1.15);
+    opacity: 0.7;
+    box-shadow: 0 0 16px rgba(34, 211, 238, 0.9);
+  }
+}
+
+.status-pulse-green {
+  animation: status-pulse 2s infinite ease-in-out;
+  background-color: var(--color-green);
+  box-shadow: 0 0 8px var(--color-green-glow);
+}
+
+@keyframes map-marker-pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.45);
+    opacity: 0.75;
+  }
+}
+
+.pulse-indicator {
+  transform-origin: center;
+  transform-box: fill-box;
+  animation: map-marker-pulse 2.2s infinite ease-in-out;
+}
+
+/* Cyber Time Slider */
+input[type="range"]::-webkit-slider-runnable-track {
+  background: rgba(255, 255, 255, 0.1);
+  height: 6px;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  background: #22d3ee;
+  box-shadow: 0 0 10px #22d3ee, 0 0 2px #22d3ee inset;
+  height: 18px;
+  width: 18px;
+  border-radius: 50%;
+  margin-top: -6px;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+/* Dynamic glow values */
+.glow-text-green {
+  text-shadow: 0 0 8px rgba(16, 185, 129, 0.6);
+}
+
+.glow-text-yellow {
+  text-shadow: 0 0 8px rgba(245, 158, 11, 0.6);
+}
+
+.glow-text-red {
+  text-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+}
+
+.border-glow-red {
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.25);
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.border-glow-green {
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.25);
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+/* Scanline effect */
+.scanline {
+  background: linear-gradient(to bottom,
+      rgba(255, 255, 255, 0),
+      rgba(255, 255, 255, 0) 50%,
+      rgba(34, 211, 238, 0.04) 50%,
+      rgba(34, 211, 238, 0.04));
+  background-size: 100% 4px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Rerouting dash polyline animation */
+.leaflet-interactive[stroke-dasharray] {
+  animation: dash 30s linear infinite;
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: -1000;
+  }
+}
+
+/* Custom Hospital Glassmorphic Tooltip Labels */
+.hospital-tooltip {
+  background: rgba(15, 23, 42, 0.85) !important;
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(244, 63, 94, 0.45) !important;
+  /* Rose border */
+  color: #fda4af !important;
+  /* Soft rose text */
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 9px !important;
+  font-weight: 700;
+  padding: 2.5px 7px !important;
+  border-radius: 4px !important;
+  box-shadow: 0 4px 12px rgba(244, 63, 94, 0.2) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.hospital-tooltip::before {
+  border-right-color: rgba(244, 63, 94, 0.45) !important;
+}
+
+/* Custom Cyber Switch Toggle */
+.cyber-switch {
+  position: relative;
+  display: inline-block;
+  width: 32px;
+  height: 18px;
+}
+
+.cyber-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switch-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.1);
+  transition: .2s;
+  border-radius: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.switch-slider:before {
+  position: absolute;
+  content: "";
+  height: 10px;
+  width: 10px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #64748b;
+  transition: .2s;
+  border-radius: 50%;
+}
+
+input:checked+.switch-slider {
+  background-color: rgba(34, 211, 238, 0.2);
+  border-color: #22d3ee;
+}
+
+input:checked+.switch-slider:before {
+  transform: translateX(14px);
+  background-color: #22d3ee;
+  box-shadow: 0 0 8px #22d3ee;
+}
+
+/* Smooth zoom transition overrides for Leaflet */
+.leaflet-zoom-animated {
+  transition: transform 0.38s cubic-bezier(0.1, 0.8, 0.25, 1) !important;
+}
+
+/* Smooth road color and opacity transitions */
+.traffic-road-glow, .traffic-road-solid {
+  transition: stroke 0.6s cubic-bezier(0.4, 0, 0.2, 1), stroke-width 0.4s ease, opacity 0.4s ease !important;
+}

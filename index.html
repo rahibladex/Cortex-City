@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CortexCity - Mangaluru Predictive Traffic Digital Twin</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cyber: {
+              bg: '#0b0f19',
+              slate: '#0f172a',
+              cyan: '#22d3ee',
+              green: '#10b981',
+              yellow: '#f59e0b',
+              red: '#ef4444',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <!-- Google Fonts -->
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet" />
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body class="h-full flex flex-col bg-cyber-bg font-sans selection:bg-cyber-cyan/30 selection:text-white relative">
+
+  <!-- Futuristic Scanline Overlay -->
+  <div class="scanline absolute inset-0 pointer-events-none"></div>
+
+  <!-- Header Section -->
+  <header class="glass-panel border-b border-white/10 px-6 py-4 flex items-center justify-between z-20 shrink-0">
+    <div class="flex items-center gap-3">
+      <div
+        class="w-10 h-10 rounded-lg bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/25">
+        <i class="fa-solid fa-network-wired text-white text-xl animate-pulse"></i>
+      </div>
+      <div>
+        <h1
+          class="font-cyber font-black text-xl tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-white via-slate-200 to-cyan-400">
+          CORTEX<span class="text-cyber-cyan glow-cyan">CITY</span>
+        </h1>
+        <p class="text-xs font-tech tracking-widest text-slate-400 uppercase">MANGALURU PREDICTIVE TRAFFIC DIGITAL TWIN
+        </p>
+      </div>
+    </div>
+
+    <!-- AI Status Indicator -->
+    <div class="flex items-center gap-4 bg-slate-900/60 px-4 py-2 rounded-full border border-cyber-cyan/20">
+      <span class="flex h-3.5 w-3.5 relative">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyber-cyan opacity-75"></span>
+        <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-cyber-cyan shadow-sm shadow-cyan-500"></span>
+      </span>
+      <span class="font-cyber text-xs font-semibold tracking-wider text-cyber-cyan">AI PREDICTIVE ENGINE: ONLINE</span>
+    </div>
+  </header>
+
+  <!-- Main Dashboard Container -->
+  <div class="flex-1 flex overflow-hidden relative">
+
+    <!-- Left Controls and Metrics Panel (Sidebar) -->
+    <aside
+      class="w-[420px] glass-panel border-r border-white/10 flex flex-col overflow-y-auto p-5 gap-5 z-10 select-none">
+
+      <!-- Panel 1: Simulation Controls -->
+      <section class="flex flex-col gap-3">
+        <div class="flex items-center gap-2 border-b border-white/5 pb-2">
+          <i class="fa-solid fa-sliders text-cyber-cyan"></i>
+          <h2 class="font-cyber text-sm font-bold tracking-wider text-slate-200">CONTROL ROOM</h2>
+        </div>
+
+        <!-- Day-of-the-Week Selector -->
+        <div>
+          <label for="day-select" class="block text-xs font-tech text-slate-400 mb-1.5 uppercase tracking-wider">Select
+            Day of Week</label>
+          <div class="relative">
+            <select id="day-select"
+              class="w-full bg-slate-950/80 border border-white/15 rounded-lg px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-cyber-cyan transition font-tech cursor-pointer appearance-none">
+              <option value="Monday" selected>Monday (Weekday)</option>
+              <option value="Tuesday">Tuesday (Weekday)</option>
+              <option value="Wednesday">Wednesday (Weekday)</option>
+              <option value="Thursday">Thursday (Weekday)</option>
+              <option value="Friday">Friday (Weekday)</option>
+              <option value="Saturday">Saturday (Half-Holiday)</option>
+              <option value="Sunday">Sunday (Holiday)</option>
+            </select>
+            <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-slate-400">
+              <i class="fa-solid fa-chevron-down text-xs"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Weather API Feed -->
+        <div>
+          <label class="block text-xs font-tech text-slate-400 mb-1.5 uppercase tracking-wider">Live Weather Feed
+            (Mangaluru)</label>
+          <div id="live-weather-card"
+            class="bg-slate-950/60 border border-cyber-cyan/15 rounded-lg p-3 flex items-center justify-between transition-all duration-300">
+            <div class="flex items-center gap-3">
+              <div id="live-weather-icon-container"
+                class="w-10 h-10 rounded-lg bg-slate-900 flex items-center justify-center text-lg text-slate-400">
+                <i id="live-weather-icon" class="fa-solid fa-spinner fa-spin text-cyber-cyan"></i>
+              </div>
+              <div>
+                <div id="live-weather-desc" class="text-xs font-cyber font-bold text-slate-200 uppercase tracking-wide">
+                  Syncing Weather...</div>
+                <div id="live-weather-temp" class="text-[10px] font-tech text-slate-400 font-medium">Querying
+                  Open-Meteo...</div>
+              </div>
+            </div>
+            <div class="text-right flex flex-col justify-center">
+              <div id="live-weather-badge"
+                class="text-[9px] font-cyber font-black bg-cyber-cyan/10 border border-cyber-cyan/20 text-cyber-cyan px-2 py-0.5 rounded-full uppercase tracking-wider inline-block">
+                LIVE</div>
+              <span id="live-weather-effect" class="text-[9px] font-tech text-slate-500 mt-1 uppercase">Loading Flow
+                Coefficient...</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Scenario Auto-Detection -->
+        <div class="mt-2 border-t border-white/5 pt-3">
+          <div class="flex justify-between items-baseline mb-1.5">
+            <label class="block text-xs font-tech text-slate-400 uppercase tracking-wider">AI Scenario
+              Auto-Detection</label>
+            <span class="text-[9px] font-tech text-cyber-cyan uppercase tracking-wider animate-pulse">AUTO-SYNCED</span>
+          </div>
+          <div class="flex flex-col gap-2.5 bg-slate-950/40 border border-white/5 rounded-lg p-3">
+            <!-- Scenario 1: Flood -->
+            <div id="status-flood-container"
+              class="flex items-center justify-between py-0.5 opacity-60 transition-all duration-300"
+              title="Auto-Triggered by Stormy Weather">
+              <span class="flex items-center gap-2">
+                <i class="fa-solid fa-water text-blue-400 w-4 text-center"></i>
+                <span class="text-xs font-tech text-slate-200">Flooding (Closure)</span>
+              </span>
+              <span id="status-flood-badge"
+                class="text-[9px] font-cyber font-bold border border-slate-800 bg-slate-950 text-slate-500 px-2 py-0.5 rounded uppercase tracking-wider">Inactive</span>
+            </div>
+
+            <!-- Scenario 2: Beach Festival -->
+            <div id="status-festival-container"
+              class="flex items-center justify-between py-0.5 opacity-60 transition-all duration-300"
+              title="Auto-Triggered on Weekend Evenings">
+              <span class="flex items-center gap-2">
+                <i class="fa-solid fa-umbrella-beach text-amber-400 w-4 text-center"></i>
+                <span class="text-xs font-tech text-slate-200">Beach Festival</span>
+              </span>
+              <span id="status-festival-badge"
+                class="text-[9px] font-cyber font-bold border border-slate-800 bg-slate-950 text-slate-500 px-2 py-0.5 rounded uppercase tracking-wider">Inactive</span>
+            </div>
+
+            <!-- Scenario 3: Metro Construction -->
+            <div id="status-construction-container"
+              class="flex items-center justify-between py-0.5 opacity-60 transition-all duration-300"
+              title="Auto-Triggered on Weekday Working Hours">
+              <span class="flex items-center gap-2">
+                <i class="fa-solid fa-person-digging text-purple-400 w-4 text-center"></i>
+                <span class="text-xs font-tech text-slate-200">Construction</span>
+              </span>
+              <span id="status-construction-badge"
+                class="text-[9px] font-cyber font-bold border border-slate-800 bg-slate-950 text-slate-500 px-2 py-0.5 rounded uppercase tracking-wider">Inactive</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel 2: Live AI Analytics Metrics -->
+      <section class="flex flex-col gap-3">
+        <div class="flex items-center gap-2 border-b border-white/5 pb-2">
+          <i class="fa-solid fa-chart-line text-cyber-cyan"></i>
+          <h2 class="font-cyber text-sm font-bold tracking-wider text-slate-200">LIVE CITY METRICS</h2>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <!-- Avg Speed -->
+          <div class="bg-slate-950/50 border border-white/5 rounded-xl p-3 flex flex-col justify-between">
+            <span class="text-[10px] font-tech text-slate-400 uppercase tracking-widest">Avg City Speed</span>
+            <div class="flex items-baseline gap-1 mt-1">
+              <span id="avg-speed-val" class="font-cyber text-2xl font-black text-cyber-green glow-text-green">45</span>
+              <span class="text-xs text-slate-500 font-tech">km/h</span>
+            </div>
+            <div class="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
+              <div id="avg-speed-bar" class="bg-cyber-green h-full transition-all duration-500" style="width: 75%">
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Bottlenecks -->
+          <div class="bg-slate-950/50 border border-white/5 rounded-xl p-3 flex flex-col justify-between">
+            <span class="text-[10px] font-tech text-slate-400 uppercase tracking-widest font-medium">Bottlenecks</span>
+            <div class="flex items-baseline gap-1 mt-1">
+              <span id="bottlenecks-count"
+                class="font-cyber text-2xl font-black text-cyber-green glow-text-green">0</span>
+              <span class="text-xs text-slate-500 font-tech">active</span>
+            </div>
+            <div class="flex items-center gap-1.5 mt-2.5">
+              <span id="bottleneck-status-dot" class="w-2.5 h-2.5 rounded-full bg-cyber-green"></span>
+              <span id="bottleneck-status-lbl"
+                class="text-[10px] font-tech text-slate-400 font-bold uppercase tracking-wider">Smooth Flow</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Insights Box -->
+        <div id="ai-insight-panel"
+          class="bg-slate-950/80 border border-cyber-cyan/20 rounded-xl p-4 flex gap-3 items-start border-glow-green transition-all duration-300">
+          <div class="w-7 h-7 rounded-full bg-cyber-cyan/15 flex items-center justify-center text-cyber-cyan shrink-0">
+            <i class="fa-solid fa-microchip-ai text-sm pulse-indicator"></i>
+          </div>
+          <div>
+            <h4 class="text-xs font-cyber font-bold text-cyber-cyan tracking-wider uppercase mb-1">AI Smart Assistant
+            </h4>
+            <p id="ai-insight-text" class="text-xs text-slate-300 leading-relaxed font-tech">
+              Analyzing spatial-temporal traffic loads... City road grids are operating under normal constraints.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel 3: AI Smart City Search -->
+      <section class="flex flex-col gap-3">
+        <div class="flex items-center justify-between border-b border-white/5 pb-2">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-magnifying-glass text-cyber-cyan"></i>
+            <h2 class="font-cyber text-[11px] font-bold tracking-wider text-slate-200">SMART TELEMETRY SEARCH</h2>
+          </div>
+          <button id="btn-clear-search"
+            class="text-[10px] font-tech font-bold text-slate-500 hover:text-cyber-cyan transition uppercase tracking-wider hidden">
+            Clear Search
+          </button>
+        </div>
+
+        <div class="relative">
+          <div class="relative">
+            <input type="text" id="search-input" placeholder="Search streets, junctions, hospitals..."
+              class="w-full bg-slate-950 border border-white/10 rounded-lg pl-9 pr-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-cyber-cyan transition font-tech" />
+            <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none text-slate-500">
+              <i class="fa-solid fa-magnifying-glass text-xs"></i>
+            </div>
+          </div>
+          
+          <!-- Search Dropdown Results -->
+          <div id="search-results-box"
+            class="absolute left-0 right-0 top-full mt-1 bg-slate-950/95 border border-white/10 rounded-lg shadow-2xl z-50 max-h-[160px] overflow-y-auto hidden">
+            <!-- Populated dynamically via Javascript -->
+          </div>
+        </div>
+
+        <!-- Search Info Details Card -->
+        <div id="search-details-panel"
+          class="bg-slate-950/60 border border-white/5 rounded-xl p-3.5 flex flex-col gap-2.5 hidden">
+          <div class="flex items-center justify-between">
+            <h3 id="search-item-title" class="text-xs font-cyber font-bold text-slate-200 tracking-wide uppercase truncate mr-2">Road Name</h3>
+            <span id="search-item-type"
+              class="text-[9px] font-tech font-bold bg-cyber-cyan/15 border border-cyber-cyan/35 text-cyber-cyan px-2 py-0.5 rounded uppercase tracking-wider shrink-0">Street</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2 text-center">
+            <div class="bg-slate-900/60 py-1.5 rounded-lg border border-white/5">
+              <div id="search-item-speed" class="text-sm font-cyber font-bold text-slate-100">42 km/h</div>
+              <div class="text-[8px] font-tech text-slate-400 uppercase tracking-wider mt-0.5">Live Speed</div>
+            </div>
+            <div class="bg-slate-900/60 py-1.5 rounded-lg border border-white/5">
+              <div id="search-item-status" class="text-sm font-cyber font-bold text-cyber-green">Clear Flow</div>
+              <div class="text-[8px] font-tech text-slate-400 uppercase tracking-wider mt-0.5">Flow Status</div>
+            </div>
+          </div>
+
+          <!-- Description Readout -->
+          <div class="bg-slate-900/40 p-2 rounded border border-white/5 text-[10px] font-tech text-slate-400 leading-normal">
+            <span id="search-item-desc">Interactive traffic analysis card details...</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel 4: 24-Hour Congestion Prediction Graph -->
+      <section class="flex flex-col gap-2 mt-auto pt-2 border-t border-white/5">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-chart-area text-cyber-cyan"></i>
+            <h2 class="font-cyber text-[11px] font-bold tracking-wider text-slate-400">24H CONGESTION FORECAST</h2>
+          </div>
+          <span id="chart-day-label"
+            class="text-[9px] font-tech font-bold text-cyber-cyan uppercase tracking-wider bg-cyber-cyan/10 px-2 py-0.5 rounded border border-cyber-cyan/20">Mon</span>
+        </div>
+        <div class="h-[120px] w-full relative">
+          <canvas id="forecastChart"></canvas>
+        </div>
+      </section>
+
+    </aside>
+
+    <!-- Center/Right Map Area -->
+    <main class="flex-1 flex flex-col relative h-full">
+
+      <!-- Interactive Leaflet Map Container -->
+      <div id="map" class="w-full h-full z-0"></div>
+
+      <!-- Floating Simulation HUD Speed Overlays -->
+      <div class="absolute top-4 left-4 z-10 flex gap-2">
+
+        <!-- View Angle / Layer Control -->
+        <div class="glass-panel rounded-lg p-1.5 flex gap-1 border border-white/10 shadow-lg">
+          <button id="view-theme-toggle"
+            class="flex items-center gap-1.5 px-2.5 py-1.5 rounded text-xs font-cyber font-bold tracking-wider transition bg-cyber-cyan/20 text-cyber-cyan border border-cyber-cyan/30"
+            title="Switch maps">
+            <i class="fa-solid fa-map-location-dot"></i>
+            <span>CYBER 2D</span>
+          </button>
+        </div>
+
+        <!-- Simulation Speed control HUD -->
+        <div class="glass-panel rounded-lg p-1.5 flex items-center gap-1 border border-white/10 shadow-lg">
+          <span
+            class="text-[9px] font-tech text-slate-400 font-bold px-2 uppercase tracking-widest border-r border-white/10">Time
+            engine</span>
+          <button id="sim-speed-1x"
+            class="sim-speed-btn w-7 h-7 rounded text-[11px] font-cyber font-bold flex items-center justify-center transition hover:bg-white/5 text-cyber-cyan bg-cyber-cyan/25 border border-cyber-cyan/30"
+            data-speed="1">1x</button>
+          <button id="sim-speed-2x"
+            class="sim-speed-btn w-7 h-7 rounded text-[11px] font-cyber font-bold flex items-center justify-center transition hover:bg-white/5 text-slate-400"
+            data-speed="2">2x</button>
+          <button id="sim-speed-5x"
+            class="sim-speed-btn w-7 h-7 rounded text-[11px] font-cyber font-bold flex items-center justify-center transition hover:bg-white/5 text-slate-400"
+            data-speed="5">5x</button>
+          <button id="sim-pause"
+            class="sim-speed-btn w-7 h-7 rounded text-xs flex items-center justify-center transition hover:bg-white/5 text-slate-400"
+            data-speed="0">
+            <i class="fa-solid fa-pause"></i>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Floating Map Legend Overlay -->
+      <div
+        class="absolute top-4 right-16 z-10 glass-panel rounded-xl p-3.5 border border-white/10 flex flex-col gap-2.5 shadow-lg select-none">
+        <h4
+          class="text-[10px] font-cyber font-bold text-slate-300 tracking-wider uppercase border-b border-white/5 pb-1">
+          Traffic density legend</h4>
+        <div class="flex flex-col gap-2 text-xs font-tech">
+          <div class="flex items-center gap-2.5 text-slate-300">
+            <span class="w-3.5 h-1.5 rounded-full bg-[#10b981] shadow-sm shadow-emerald-500/30"></span>
+            <span>Clear: &gt; 40 km/h</span>
+          </div>
+          <div class="flex items-center gap-2.5 text-slate-300">
+            <span class="w-3.5 h-1.5 rounded-full bg-[#FFEA00] shadow-sm shadow-yellow-500/30"></span>
+            <span>Traffic: &lt; 40 km/h</span>
+          </div>
+          <div class="flex items-center gap-2.5 text-slate-300">
+            <span class="w-3.5 h-1.5 rounded-full bg-[#FFA500] shadow-sm shadow-orange-500/30"></span>
+            <span>Construction</span>
+          </div>
+          <div class="flex items-center gap-2.5 text-slate-300">
+            <span class="w-3.5 h-1.5 rounded-full bg-[#a855f7] shadow-sm shadow-purple-500/30 animate-pulse"></span>
+            <span>Flooded (Closed)</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Panel: 24-Hour Time Slider overlay -->
+      <div
+        class="absolute bottom-4 left-4 right-4 z-10 glass-panel border border-white/10 rounded-xl p-4 flex flex-col gap-3 shadow-lg select-none">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center gap-2.5">
+            <div
+              class="w-7 h-7 rounded-lg bg-cyber-cyan/10 border border-cyber-cyan/20 flex items-center justify-center text-cyber-cyan">
+              <i class="fa-regular fa-clock text-xs animate-spin-slow"></i>
+            </div>
+            <div>
+              <span id="time-readout" class="font-cyber font-black text-lg text-slate-100 tracking-wide glow-cyan">09:00
+                AM</span>
+              <span id="day-readout"
+                class="font-tech text-xs text-slate-400 font-bold uppercase tracking-wider ml-1.5">Monday</span>
+            </div>
+            <button id="btn-live-sync"
+              class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-cyber font-bold border transition duration-300 bg-slate-900/60 border-white/10 text-slate-400 hover:text-cyber-cyan hover:border-cyber-cyan/30 ml-4 cursor-pointer"
+              title="Sync with Real-time Clock">
+              <i class="fa-solid fa-clock-rotate-left"></i>
+              <span>SYNC REAL-TIME</span>
+            </button>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <span class="text-[10px] font-tech text-slate-400 uppercase tracking-widest font-bold">Spatial-Temporal
+              simulation time</span>
+          </div>
+        </div>
+
+        <!-- Slider Track wrapper -->
+        <div class="w-full relative px-2 py-1">
+          <input type="range" id="time-slider" min="0" max="1439" value="540"
+            class="w-full bg-transparent accent-cyber-cyan appearance-none cursor-pointer focus:outline-none" />
+
+          <!-- Tick markings -->
+          <div class="flex justify-between text-[9px] font-cyber text-slate-500 mt-2 select-none tracking-widest">
+            <span>12:00 AM</span>
+            <span>03:00 AM</span>
+            <span>06:00 AM</span>
+            <span>09:00 AM</span>
+            <span>12:00 PM</span>
+            <span>03:00 PM</span>
+            <span>06:00 PM</span>
+            <span>09:00 PM</span>
+            <span>11:59 PM</span>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- Chart.js Library -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Leaflet JS Library -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <!-- App JS Code -->
+  <script src="app.js?v=40"></script>
+</body>
+
+</html>

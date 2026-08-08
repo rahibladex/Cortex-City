@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cortex City - Telemetry Twin Presentation</title>
+  <!-- Orbitron & Space Grotesk Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800;900&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    /* 1. CYBER SYSTEM RESET & TOKENS */
+    :root {
+      --bg-darker: #05070c;
+      --bg-card: rgba(8, 12, 24, 0.75);
+      --border-cyber: rgba(34, 211, 238, 0.25);
+      --border-glowing: rgba(34, 211, 238, 0.6);
+      
+      --cyan: #22d3ee;
+      --emerald: #10b981;
+      --rose: #f43f5e;
+      --orange: #f97316;
+      --purple: #a855f7;
+      
+      --text-primary: #f1f5f9;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Space Grotesk', sans-serif;
+      background-color: var(--bg-darker);
+      color: var(--text-primary);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+    }
+
+    /* 2. BACKGROUND TECH GRID & PARTICLES */
+    .bg-grid {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      background-image: 
+        linear-gradient(rgba(34, 211, 238, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(34, 211, 238, 0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      background-position: center;
+      perspective: 1000px;
+    }
+
+    .bg-grid::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at 50% 50%, transparent 20%, var(--bg-darker) 90%);
+      pointer-events: none;
+    }
+
+    .cyber-nodes {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    /* 3. PRESENTATION SLIDES CONTAINER */
+    .presentation-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 2.5rem;
+    }
+
+    /* Header Branding */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-cyber);
+      padding-bottom: 1rem;
+      background: rgba(5, 7, 12, 0.5);
+      backdrop-filter: blur(10px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-logo {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, var(--cyan), var(--purple));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      box-shadow: 0 0 15px rgba(34, 211, 238, 0.4);
+      animation: logoGlow 3s infinite alternate;
+    }
+
+    .brand-name {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: 1.4rem;
+      letter-spacing: 2px;
+      background: linear-gradient(to right, var(--cyan), #fff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .slide-counter {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.1rem;
+      color: var(--cyan);
+      letter-spacing: 3px;
+      background: rgba(34, 211, 238, 0.1);
+      padding: 0.4rem 1rem;
+      border: 1px solid var(--border-cyber);
+      border-radius: 20px;
+    }
+
+    /* Slide Manager */
+    .slides-wrapper {
+      position: relative;
+      flex-grow: 1;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 2rem 0;
+    }
+
+    .slide {
+      position: absolute;
+      width: 100%;
+      max-width: 1200px;
+      height: 100%;
+      max-height: 600px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(30px) scale(0.96);
+      transition: all 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .slide.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+
+    .slide.prev {
+      transform: translateX(-100px) scale(0.9);
+      opacity: 0;
+    }
+
+    .slide.next {
+      transform: translateX(100px) scale(0.9);
+      opacity: 0;
+    }
+
+    /* 4. VISUAL SIDE CARDS */
+    .slide-text {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 1.5rem;
+    }
+
+    .slide-visual {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .badge {
+      align-self: flex-start;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--cyan);
+      background: rgba(34, 211, 238, 0.1);
+      border: 1px solid var(--border-cyber);
+      padding: 0.3rem 0.8rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      box-shadow: 0 0 10px rgba(34, 211, 238, 0.1);
+    }
+
+    h2 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 900;
+      line-height: 1.15;
+      letter-spacing: -1px;
+    }
+
+    .gradient-text-cyan {
+      background: linear-gradient(135deg, #fff 40%, var(--cyan));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .gradient-text-rose {
+      background: linear-gradient(135deg, #fff 40%, var(--rose));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .gradient-text-emerald {
+      background: linear-gradient(135deg, #fff 40%, var(--emerald));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .gradient-text-orange {
+      background: linear-gradient(135deg, #fff 40%, var(--orange));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .lead-text {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* Glass Panels */
+    .glass-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-cyber);
+      border-radius: 16px;
+      padding: 2rem;
+      backdrop-filter: blur(15px);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      position: relative;
+      overflow: hidden;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .glass-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -50%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        to right,
+        transparent,
+        rgba(255, 255, 255, 0.05),
+        transparent
+      );
+      transform: skewX(-25deg);
+      transition: 0.75s;
+    }
+
+    .glass-card:hover::before {
+      left: 120%;
+    }
+
+    /* SLIDE 1 CUSTOM STYLES */
+    .digital-twin-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      width: 100%;
+    }
+
+    .twin-metric-box {
+      border: 1px dashed var(--border-cyber);
+      background: rgba(34, 211, 238, 0.03);
+      padding: 1.25rem;
+      border-radius: 8px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .twin-metric-box:hover {
+      border-style: solid;
+      border-color: var(--cyan);
+      box-shadow: 0 0 15px rgba(34, 211, 238, 0.15);
+      transform: translateY(-2px);
+    }
+
+    .twin-metric-val {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--cyan);
+      margin-bottom: 0.25rem;
+    }
+
+    .twin-metric-lbl {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* SLIDE 2 STORY CUSTOM STYLES */
+    .timeline-story {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .story-bubble {
+      display: flex;
+      gap: 1rem;
+      background: rgba(244, 63, 94, 0.03);
+      border-left: 3px solid var(--rose);
+      padding: 1rem;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .story-bubble-icon {
+      color: var(--rose);
+      flex-shrink: 0;
+    }
+
+    .story-bubble-text {
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .story-highlight {
+      font-weight: bold;
+      color: var(--rose);
+    }
+
+    .impact-counter-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.2rem;
+      width: 100%;
+    }
+
+    .impact-box {
+      background: rgba(244, 63, 94, 0.05);
+      border: 1px solid rgba(244, 63, 94, 0.2);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+    }
+
+    .impact-val {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: var(--rose);
+      text-shadow: 0 0 15px rgba(244, 63, 94, 0.35);
+    }
+
+    /* SLIDE 3 SOLUTION CUSTOM STYLES */
+    .solutions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .solution-item {
+      display: flex;
+      align-items: start;
+      gap: 1rem;
+      background: rgba(16, 185, 129, 0.03);
+      border: 1px solid rgba(16, 185, 129, 0.15);
+      padding: 1rem;
+      border-radius: 8px;
+    }
+
+    .sol-icon {
+      color: var(--emerald);
+      margin-top: 0.15rem;
+    }
+
+    .sol-title {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: bold;
+      color: var(--text-primary);
+      font-size: 1rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .sol-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* Interactive mock routing window */
+    .mock-twin-preview {
+      width: 100%;
+      height: 350px;
+      border: 1px solid var(--border-cyber);
+      border-radius: 12px;
+      background: #080c18;
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8);
+    }
+
+    .mock-twin-header {
+      background: rgba(34, 211, 238, 0.08);
+      border-bottom: 1px solid var(--border-cyber);
+      padding: 0.5rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.75rem;
+      color: var(--cyan);
+    }
+
+    .mock-map-canvas {
+      width: 100%;
+      height: calc(100% - 30px);
+      position: relative;
+    }
+
+    /* Floating vector nodes in mock map */
+    .mock-node {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: var(--cyan);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--cyan);
+    }
+
+    .mock-node-label {
+      position: absolute;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 8px;
+      color: var(--text-muted);
+      transform: translate(-50%, -15px);
+      white-space: nowrap;
+    }
+
+    .mock-edge {
+      position: absolute;
+      background: var(--cyan);
+      height: 2px;
+      opacity: 0.75;
+      transform-origin: 0 0;
+      box-shadow: 0 0 5px var(--cyan);
+    }
+
+    /* SLIDE 4 FUTURE ROADMAP */
+    .future-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .roadmap-node {
+      display: flex;
+      gap: 1.2rem;
+      position: relative;
+    }
+
+    .roadmap-node:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 19px;
+      top: 40px;
+      bottom: -20px;
+      width: 1px;
+      border-left: 2px dashed var(--border-cyber);
+    }
+
+    .roadmap-dot {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(34, 211, 238, 0.1);
+      border: 2px solid var(--cyan);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--cyan);
+      box-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
+      flex-shrink: 0;
+    }
+
+    .roadmap-content {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .roadmap-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    .roadmap-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* SLIDE 5 PRICING SLIDE */
+    .pricing-table-container {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'Space Grotesk', sans-serif;
+      margin-top: 0.5rem;
+    }
+
+    th {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 1px;
+      color: var(--cyan);
+      text-transform: uppercase;
+      padding: 0.8rem 1rem;
+      border-bottom: 2px solid var(--border-cyber);
+      text-align: left;
+      background: rgba(34, 211, 238, 0.04);
+    }
+
+    td {
+      padding: 0.9rem 1rem;
+      border-bottom: 1px solid rgba(34, 211, 238, 0.15);
+      font-size: 0.9rem;
+    }
+
+    tr:hover {
+      background: rgba(34, 211, 238, 0.02);
+    }
+
+    .price-badge-lakhs {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 800;
+      font-size: 0.8rem;
+      color: var(--orange);
+      background: rgba(249, 115, 22, 0.1);
+      border: 1px solid rgba(249, 115, 22, 0.3);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+    }
+
+    .price-badge-crores {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 800;
+      font-size: 0.85rem;
+      color: var(--purple);
+      background: rgba(168, 85, 247, 0.1);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      padding: 0.2rem 0.6rem;
+      border-radius: 4px;
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.2);
+    }
+
+    .total-cost-panel {
+      border: 1px solid var(--border-cyber);
+      background: rgba(34, 211, 238, 0.04);
+      border-radius: 12px;
+      padding: 1.5rem;
+      text-align: center;
+      box-shadow: 0 0 15px rgba(34, 211, 238, 0.1);
+    }
+
+    .total-cost-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.9rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .total-cost-val {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 900;
+      color: var(--cyan);
+      text-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
+    }
+
+    /* 5. BOTTOM NAVIGATION CONTROLS */
+    footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--border-cyber);
+      padding-top: 1.25rem;
+      background: rgba(5, 7, 12, 0.5);
+      backdrop-filter: blur(10px);
+    }
+
+    .footer-hints {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .keyboard-key {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-family: monospace;
+      font-weight: bold;
+      color: var(--text-primary);
+    }
+
+    .slide-dots {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(34, 211, 238, 0.15);
+      border: 1px solid var(--border-cyber);
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .dot.active {
+      background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan);
+      transform: scale(1.3);
+    }
+
+    .controls-group {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .control-btn {
+      background: transparent;
+      border: 1px solid var(--border-cyber);
+      color: var(--text-primary);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s ease;
+    }
+
+    .control-btn:hover {
+      background: rgba(34, 211, 238, 0.1);
+      border-color: var(--cyan);
+      box-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
+      color: var(--cyan);
+    }
+
+    /* 6. KEYFRAME ANIMATIONS */
+    @keyframes logoGlow {
+      from {
+        box-shadow: 0 0 10px rgba(34, 211, 238, 0.4);
+      }
+      to {
+        box-shadow: 0 0 25px rgba(168, 85, 247, 0.6);
+      }
+    }
+
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+      }
+      40% {
+        transform: translateY(-10px);
+      }
+      60% {
+        transform: translateY(-5px);
+      }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 1024px) {
+      .slide {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        max-height: 85%;
+        overflow-y: auto;
+        padding-right: 0.5rem;
+      }
+      .slide-visual {
+        display: flex;
+        width: 100%;
+        min-height: 300px;
+        margin-top: 1rem;
+        padding-bottom: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Tech Background Grid Overlay -->
+  <div class="bg-grid"></div>
+  <canvas class="cyber-nodes" id="nodesCanvas"></canvas>
+
+  <div class="presentation-container">
+    
+    <!-- Top Branding Header -->
+    <header>
+      <div class="brand">
+        <div class="brand-logo">
+          <i data-lucide="cpu" style="width: 20px; height: 20px;"></i>
+        </div>
+        <div class="brand-name">CORTEX CITY</div>
+      </div>
+      <div class="slide-counter" id="slideNum">01 / 09</div>
+    </header>
+
+    <!-- Slides Wrapper -->
+    <div class="slides-wrapper">
+
+      <!-- SLIDE 1: INTRO -->
+      <div class="slide active" id="slide-1">
+        <div class="slide-text">
+          <div class="badge">Digital Twin Paradigm</div>
+          <h2 class="gradient-text-cyan">What is Cortex City?</h2>
+          <p class="lead-text">
+            Cortex City is a state-of-the-art spatial-temporal AI traffic digital twin designed for modern urban environments. It mirrors a city's road grid, analyzing real-time vehicle flow, weather patterns, and local constraints to simulate and predict congestion citywide.
+          </p>
+          <div class="digital-twin-grid">
+            <div class="twin-metric-box">
+              <div class="twin-metric-val">100ms</div>
+              <div class="twin-metric-lbl">API Sync Latency</div>
+            </div>
+            <div class="twin-metric-box">
+              <div class="twin-metric-val">24hr</div>
+              <div class="twin-metric-lbl">Forecasting Window</div>
+            </div>
+          </div>
+        </div>
+        <div class="slide-visual">
+          <div class="glass-card">
+            <!-- Simulated Interface Graph -->
+            <div class="mock-twin-preview">
+              <div class="mock-twin-header">
+                <span>SIMULATION FEED</span>
+                <span style="color: var(--emerald);">● RUNNING</span>
+              </div>
+              <div class="mock-map-canvas" id="canvas-1"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 2: STORY TIME TITLE SLIDE -->
+      <div class="slide" id="slide-2">
+        <div class="slide-text" style="align-items: center; text-align: center; grid-column: span 2; gap: 2.5rem; justify-content: center;">
+          <div class="badge" style="color: var(--rose); background: rgba(244, 63, 94, 0.1); border-color: rgba(244, 63, 94, 0.3); font-size: 0.9rem; padding: 0.5rem 1.5rem;">Teaser Transition</div>
+          <h1 class="gradient-text-rose" style="font-family: 'Orbitron', sans-serif; font-size: 6.5rem; font-weight: 900; letter-spacing: -2px; line-height: 1; animation: logoGlow 3s infinite alternate;">STORY TIME</h1>
+          <p class="lead-text" style="font-size: 1.5rem; max-width: 600px; color: var(--text-primary);">
+            Step inside a real-world chronicle demonstrating the high cost of gridlock in Mangaluru.
+          </p>
+          <div style="animation: bounce 2s infinite; margin-top: 1rem; color: var(--rose);">
+            <i data-lucide="arrow-right-circle" style="width: 48px; height: 48px;"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 3: THE PROBLEM STORY -->
+      <div class="slide" id="slide-3">
+        <div class="slide-text">
+          <div class="badge" style="color: var(--rose); background: rgba(244, 63, 94, 0.1); border-color: rgba(244, 63, 94, 0.3);">An Urban Emergency Chronicle</div>
+          <h2 class="gradient-text-rose" style="font-size: 2.2rem;">The Emergency</h2>
+          <div class="timeline-story">
+            <div class="story-bubble">
+              <i data-lucide="ambulance" class="story-bubble-icon" style="margin-top: 0.25rem;"></i>
+              <div class="story-bubble-text" style="font-size: 1.0rem; line-height: 1.6; color: var(--text-primary);">
+                At 6:30 PM, heavy monsoon rains descend upon Mangaluru, instantly flooding the arterial highway link near Kuntikan Junction. Standard navigation apps show a clear green path, unaware of the sudden flash flood build-up. Stuck in this growing gridlock is an emergency ambulance transporting a critical patient. The vehicle is trapped behind hundreds of cars, with travel speeds reduced to a complete halt. Standard routing systems react only after traffic has accumulated, providing zero forward warning to emergency dispatchers. Because of this predictive blindness, the ambulance loses twenty crucial minutes in gridlock. This delay highlights the fatal limitation of today's reactive navigation: it cannot anticipate weather-induced bottlenecks. Cortex City was built to solve this exact nightmare. By combining spatial road models with real-time weather coefficients, it predicts bottlenecks twenty minutes before they form, guiding emergency vehicles and citizens to safety.
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="slide-visual">
+          <div class="glass-card" style="border-color: rgba(244, 63, 94, 0.25);">
+            <div class="impact-counter-grid">
+              <div class="impact-box">
+                <div class="impact-val">+45%</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">Emergency Response Delay</div>
+              </div>
+              <div class="impact-box">
+                <div class="impact-val">₹500 Cr+</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.5rem;">Annual City Economic Loss</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 4: SOLUTION -->
+      <div class="slide" id="slide-4">
+        <div class="slide-text">
+          <div class="badge" style="color: var(--emerald); background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3);">Predictive AI Platform</div>
+          <h2 class="gradient-text-emerald">Intellectual Routing Solutions</h2>
+          <p class="lead-text">
+            Cortex City acts as the brain of the streets. By correlating weather data with predictive spatial mapping, it preempts traffic build-up before it forms.
+          </p>
+          <div class="solutions-list">
+            <div class="solution-item">
+              <i data-lucide="cloud-rain" class="sol-icon"></i>
+              <div>
+                <div class="sol-title">Dynamic Weather Coefficients</div>
+                <div class="sol-desc">Integrates live wind, rainfall, and cloud data to dynamically lower road throughput speeds on susceptible segments.</div>
+              </div>
+            </div>
+            <div class="solution-item">
+              <i data-lucide="navigation-2" class="sol-icon"></i>
+              <div>
+                <div class="sol-title">Weighted Dijkstra Pathfinder</div>
+                <div class="sol-desc">Computes real-time congestion costs dynamically to guide commuters and emergency response away from bottlenecks.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="slide-visual">
+          <div class="glass-card" style="border-color: rgba(16, 185, 129, 0.25);">
+            <div class="mock-twin-preview" style="border-color: rgba(16, 185, 129, 0.3);">
+              <div class="mock-twin-header">
+                <span>REROUTING PROTOCOL</span>
+                <span style="color: var(--cyan);">ACTIVE</span>
+              </div>
+              <div class="mock-map-canvas" id="canvas-3"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 5: FUTURE HORIZONS -->
+      <div class="slide" id="slide-5">
+        <div class="slide-text">
+          <div class="badge">Next Generation Scaling</div>
+          <h2 class="gradient-text-cyan">Future Scaling Roadmap</h2>
+          <p class="lead-text">
+            Expanding Cortex City from a prediction model to an active agent in city control grids.
+          </p>
+          <div class="future-steps">
+            <div class="roadmap-node">
+              <div class="roadmap-dot"><i data-lucide="camera" style="width: 16px; height: 16px;"></i></div>
+              <div class="roadmap-content">
+                <div class="roadmap-title">IoT Camera Computer Vision</div>
+                <div class="roadmap-desc">Integrate live traffic cameras to automatically measure queue lengths and classify vehicle classifications.</div>
+              </div>
+            </div>
+            <div class="roadmap-node">
+              <div class="roadmap-dot"><i data-lucide="shield-alert" style="width: 16px; height: 16px;"></i></div>
+              <div class="roadmap-content">
+                <div class="roadmap-title">Emergency Signal Preemption</div>
+                <div class="roadmap-desc">Automatically switch corridor traffic signals to green when an emergency ambulance is dispatched.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="slide-visual">
+          <div class="glass-card">
+            <div class="timeline-story" style="gap: 1.5rem;">
+              <div style="border-left: 2px solid var(--cyan); padding-left: 1rem;">
+                <div style="font-family: 'Orbitron', sans-serif; font-weight: 800; font-size: 0.9rem; color: var(--cyan);">PHASE 3: CARBON AUDITING</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Correlating idle gridlock build-ups to active carbon outputs to feed urban carbon abatement programs.</div>
+              </div>
+              <div style="border-left: 2px solid var(--purple); padding-left: 1rem;">
+                <div style="font-family: 'Orbitron', sans-serif; font-weight: 800; font-size: 0.9rem; color: var(--purple);">PHASE 4: EXPANSION GRID</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Unified regional dashboard linking highway telemetry systems from Mangaluru, Udupi, and Puttur.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 6: PRICING -->
+      <div class="slide" id="slide-6">
+        <div class="slide-text">
+          <div class="badge" style="color: var(--orange); background: rgba(249, 115, 22, 0.1); border-color: rgba(249, 115, 22, 0.3);">National Deployment Cost</div>
+          <h2 class="gradient-text-orange">National Infrastructure Pricing</h2>
+          <p class="lead-text">
+            Cost estimation for a phase-wise deployment across 100 major Smart Cities in India.
+          </p>
+          <div class="pricing-table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Deployment Component</th>
+                  <th>Cost per City</th>
+                  <th>Total Cost (100 Cities)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Core Software & AI Models</td>
+                  <td><span class="price-badge-lakhs">₹25 Lakhs</span></td>
+                  <td><span class="price-badge-crores">₹25 Cr</span></td>
+                </tr>
+                <tr>
+                  <td>IoT Camera & Edge Hardware Nodes</td>
+                  <td><span class="price-badge-lakhs">₹120 Lakhs</span></td>
+                  <td><span class="price-badge-crores">₹120 Cr</span></td>
+                </tr>
+                <tr>
+                  <td>Cloud Infrastructure Setup</td>
+                  <td><span class="price-badge-lakhs">₹15 Lakhs</span></td>
+                  <td><span class="price-badge-crores">₹15 Cr</span></td>
+                </tr>
+                <tr>
+                  <td>Integration & Snapping Setup</td>
+                  <td><span class="price-badge-lakhs">₹10 Lakhs</span></td>
+                  <td><span class="price-badge-crores">₹10 Cr</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="slide-visual">
+          <div class="glass-card" style="border-color: rgba(249, 115, 22, 0.25);">
+            <div class="total-cost-panel">
+              <div class="total-cost-title">Total Project Capital Outlay</div>
+              <div class="total-cost-val">₹170 CR</div>
+              <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.75rem;">(₹1.7 Crore per Smart City deployment)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 7: TECH STACK & SYSTEM ARCHITECTURE -->
+      <div class="slide" id="slide-7">
+        <div class="slide-text">
+          <div class="badge" style="color: var(--purple); background: rgba(168, 85, 247, 0.1); border-color: rgba(168, 85, 247, 0.3);">System Blueprints</div>
+          <h2 class="gradient-text-cyan" style="background: linear-gradient(135deg, #fff 40%, var(--purple)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Project Architecture & Training</h2>
+          <p class="lead-text">
+            Cortex City runs on a high-availability infrastructure stack utilizing state-of-the-art spatial-temporal AI models.
+          </p>
+          <div class="solutions-list">
+            <div class="solution-item" style="background: rgba(168, 85, 247, 0.03); border-color: rgba(168, 85, 247, 0.15);">
+              <i data-lucide="terminal" class="sol-icon" style="color: var(--purple);"></i>
+              <div>
+                <div class="sol-title">Ubuntu Linux OS Environment</div>
+                <div class="sol-desc">Deployed on Ubuntu Server OS with Docker containerization, hosting Python-based HTTP telemetry APIs and OSRM microservices.</div>
+              </div>
+            </div>
+            <div class="solution-item" style="background: rgba(168, 85, 247, 0.03); border-color: rgba(168, 85, 247, 0.15);">
+              <i data-lucide="webhook" class="sol-icon" style="color: var(--purple);"></i>
+              <div>
+                <div class="sol-title">Overpass & Open-Meteo APIs</div>
+                <div class="sol-desc">Extracts dynamic city street vectors from OpenStreetMap and live wind/rain statistics from weather engines.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="slide-visual">
+          <div class="glass-card" style="border-color: rgba(168, 85, 247, 0.25);">
+            <div class="timeline-story" style="gap: 1.5rem; text-align: left;">
+              <div style="border-left: 2px solid var(--purple); padding-left: 1rem;">
+                <div style="font-family: 'Orbitron', sans-serif; font-weight: 800; font-size: 0.9rem; color: var(--purple);">AI MODEL ARCHITECTURE</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Spatial GNN (Graph Neural Network) coupled with temporal LSTM layers to forecast propagation of congestion waves across nodes.</div>
+              </div>
+              <div style="border-left: 2px solid var(--cyan); padding-left: 1rem;">
+                <div style="font-family: 'Orbitron', sans-serif; font-weight: 800; font-size: 0.9rem; color: var(--cyan);">MODEL TRAINING METHOD</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Trained in PyTorch using 3 months of historical traffic congestion densities from Google Maps Traffic, establishing weather-decay weight regressions.</div>
+              </div>
+              <div style="border-left: 2px solid var(--emerald); padding-left: 1rem;">
+                <div style="font-family: 'Orbitron', sans-serif; font-weight: 800; font-size: 0.9rem; color: var(--emerald);">CLIENT INFERENCE ENGINE</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Compiled weights are compiled into high-performance JS matrix evaluations, executing sub-millisecond local speed adjustments as time slider changes.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 8: MANGLURU MAP TELEMETRY -->
+      <div class="slide" id="slide-8">
+        <div class="slide-text">
+          <div class="badge" style="color: var(--cyan); background: rgba(34, 211, 238, 0.1); border-color: rgba(34, 211, 238, 0.3);">Mapping Architecture</div>
+          <h2 class="gradient-text-cyan">Mangaluru Simulation Grid</h2>
+          <p class="lead-text" style="font-size: 0.95rem;">
+            The digital twin leverages precise GPS coordinate points mapped dynamically over dark vector layers to monitor regional congestion flow in real-time.
+          </p>
+          <div class="future-steps" style="gap: 0.8rem;">
+            <div style="border-left: 2px solid var(--cyan); padding-left: 0.75rem;">
+              <div style="font-family: 'Orbitron', sans-serif; font-weight: 800; font-size: 0.85rem; color: var(--cyan);">NORTH CORRIDOR (NH-66)</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem;">Connects Surathkal &rarr; Pavanje &rarr; Mulki &rarr; Padubidri. Tracks port freight and northern coastal entry flow.</div>
+            </div>
+            <div style="border-left: 2px solid var(--emerald); padding-left: 0.75rem;">
+              <div style="font-family: 'Orbitron', sans-serif; font-weight: 800; font-size: 0.85rem; color: var(--emerald);">EAST CORRIDOR (NH-75 / NH-169)</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem;">Bantwal &rarr; B.C. Road &rarr; Mani and Moodbidri &rarr; Sanoor routes. Monitors logistics and high-occupancy heavy cargo corridors.</div>
+            </div>
+            <div style="border-left: 2px solid var(--rose); padding-left: 0.75rem;">
+              <div style="font-family: 'Orbitron', sans-serif; font-weight: 800; font-size: 0.85rem; color: var(--rose);">SOUTH CORRIDOR (NH-66 South)</div>
+              <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.15rem;">Ullal &rarr; Kotekar &rarr; Talapady &rarr; Uppala. Simulates interstate flow connecting Karnataka and Kerala.</div>
+            </div>
+          </div>
+        </div>
+        <div class="slide-visual">
+          <div class="glass-card" style="padding: 1rem; border-color: rgba(34, 211, 238, 0.25); display: flex; align-items: center; justify-content: center;">
+            <img src="map_screenshot.png?v=4" alt="Mangaluru Telemetry Grid Map" style="width: 100%; max-height: 380px; object-fit: contain; border: 1px solid var(--border-cyber); border-radius: 8px; box-shadow: 0 0 20px rgba(34, 211, 238, 0.15);">
+          </div>
+        </div>
+      </div>
+
+      <!-- SLIDE 9: THANK YOU CLOSING SLIDE -->
+      <div class="slide" id="slide-9">
+        <div class="slide-text" style="align-items: center; text-align: center; grid-column: span 2; gap: 2rem; justify-content: center;">
+          <div class="badge" style="color: var(--cyan); background: rgba(34, 211, 238, 0.1); border-color: rgba(34, 211, 238, 0.3); font-size: 0.9rem; padding: 0.5rem 1.5rem;">System Terminated</div>
+          <h1 class="gradient-text-cyan" style="font-family: 'Orbitron', sans-serif; font-size: 7rem; font-weight: 900; letter-spacing: -2px; line-height: 1; animation: logoGlow 3s infinite alternate;">THANK YOU</h1>
+          <p class="lead-text" style="font-size: 1.5rem; max-width: 600px; color: var(--text-primary);">
+            Cortex City &mdash; Shaping the Future of Urban Telemetry and Predictive Mobility.
+          </p>
+          <div style="animation: bounce 2s infinite; margin-top: 1rem; color: var(--cyan);">
+            <i data-lucide="check-check" style="width: 52px; height: 52px; box-shadow: 0 0 15px rgba(34, 211, 238, 0.3); border-radius: 50%; border: 2px solid var(--cyan); padding: 0.4rem;"></i>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Controls & Dots Navigation -->
+    <footer>
+      <div class="footer-hints">
+        <span>Use arrow keys</span>
+        <span class="keyboard-key">&larr;</span>
+        <span class="keyboard-key">&rarr;</span>
+      </div>
+      
+      <div class="slide-dots" id="dotsContainer">
+        <span class="dot active" data-index="0"></span>
+        <span class="dot" data-index="1"></span>
+        <span class="dot" data-index="2"></span>
+        <span class="dot" data-index="3"></span>
+        <span class="dot" data-index="4"></span>
+        <span class="dot" data-index="5"></span>
+        <span class="dot" data-index="6"></span>
+        <span class="dot" data-index="7"></span>
+        <span class="dot" data-index="8"></span>
+      </div>
+
+      <div class="controls-group">
+        <button class="control-btn" id="prevBtn" title="Previous Slide">
+          <i data-lucide="chevron-left"></i>
+        </button>
+        <button class="control-btn" id="nextBtn" title="Next Slide">
+          <i data-lucide="chevron-right"></i>
+        </button>
+      </div>
+    </footer>
+
+  </div>
+
+  <script>
+    // Initialize Icons
+    lucide.createIcons();
+
+    // Slide Management State
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.dot');
+    const slideNum = document.getElementById('slideNum');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    let currentSlide = 0;
+
+    function showSlide(index) {
+      if (index < 0 || index >= slides.length) return;
+      
+      // Slide transitions
+      slides.forEach((slide, i) => {
+        slide.classList.remove('active', 'prev', 'next');
+        if (i < index) {
+          slide.classList.add('prev');
+        } else if (i > index) {
+          slide.classList.add('next');
+        } else {
+          slide.classList.add('active');
+        }
+      });
+
+      // Update dots
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === index);
+      });
+
+      // Update Slide numbering text
+      slideNum.textContent = `0${index + 1} / 09`;
+      currentSlide = index;
+    }
+
+    // Event Listeners
+    prevBtn.addEventListener('click', () => {
+      if (currentSlide > 0) showSlide(currentSlide - 1);
+    });
+
+    nextBtn.addEventListener('click', () => {
+      if (currentSlide < slides.length - 1) showSlide(currentSlide + 1);
+    });
+
+    dots.forEach(dot => {
+      dot.addEventListener('click', (e) => {
+        const index = parseInt(e.target.getAttribute('data-index'));
+        showSlide(index);
+      });
+    });
+
+    // Keyboard Arrow Listeners
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        if (currentSlide < slides.length - 1) showSlide(currentSlide + 1);
+      } else if (e.key === 'ArrowLeft') {
+        if (currentSlide > 0) showSlide(currentSlide - 1);
+      }
+    });
+
+    // 7. BACKGROUND DYNAMIC PARTICLE MATRIX CANVAS EFFECT
+    const canvas = document.getElementById('nodesCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let particles = [];
+    const maxParticles = 60;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Particle {
+      constructor() {
+        this.reset();
+      }
+
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.vx = (Math.random() - 0.5) * 0.4;
+        this.vy = (Math.random() - 0.5) * 0.4;
+        this.size = Math.random() * 2 + 1;
+        this.alpha = Math.random() * 0.5 + 0.1;
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+
+        if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+          this.reset();
+        }
+      }
+
+      draw() {
+        ctx.fillStyle = `rgba(34, 211, 238, ${this.alpha})`;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    // Initialize particles
+    for (let i = 0; i < maxParticles; i++) {
+      particles.push(new Particle());
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      particles.forEach(p => {
+        p.update();
+        p.draw();
+      });
+
+      // Connect near particles with faint lines
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < 100) {
+            ctx.strokeStyle = `rgba(34, 211, 238, ${(1 - dist / 100) * 0.12})`;
+            ctx.lineWidth = 0.5;
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // 8. INTERACTIVE SLIDE PREVIEW MOCK MAPS
+    function drawMockMap(containerId, isSolution = false) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+      
+      container.innerHTML = ''; // clear
+
+      // Mock coordinates
+      const mockPoints = [
+        { name: 'Kottara', top: 50, left: 30 },
+        { name: 'Kuntikan', top: 150, left: 160 },
+        { name: 'Bejai', top: 220, left: 140 },
+        { name: 'MG Road', top: 290, left: 240 }
+      ];
+
+      // Draw connecting lines (edges)
+      for (let i = 0; i < mockPoints.length - 1; i++) {
+        const p1 = mockPoints[i];
+        const p2 = mockPoints[i+1];
+        
+        const dx = p2.left - p1.left;
+        const dy = p2.top - p1.top;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+        const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+
+        const line = document.createElement('div');
+        line.className = 'mock-edge';
+        line.style.width = `${dist}px`;
+        line.style.left = `${p1.left + 4}px`;
+        line.style.top = `${p1.top + 4}px`;
+        line.style.transform = `rotate(${angle}deg)`;
+        
+        if (isSolution) {
+          line.style.background = 'var(--emerald)';
+          line.style.boxShadow = '0 0 8px var(--emerald)';
+        }
+
+        container.appendChild(line);
+      }
+
+      // Draw Nodes
+      mockPoints.forEach(pt => {
+        const el = document.createElement('div');
+        el.className = 'mock-node';
+        el.style.left = `${pt.left}px`;
+        el.style.top = `${pt.top}px`;
+        
+        if (isSolution) {
+          el.style.background = 'var(--emerald)';
+          el.style.boxShadow = '0 0 10px var(--emerald)';
+        }
+
+        const label = document.createElement('div');
+        label.className = 'mock-node-label';
+        label.textContent = pt.name;
+
+        el.appendChild(label);
+        container.appendChild(el);
+      });
+    }
+
+    // Render mock maps
+    drawMockMap('canvas-1', false);
+    drawMockMap('canvas-3', true);
+  </script>
+</body>
+</html>
